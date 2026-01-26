@@ -46,6 +46,21 @@ app.post("/jams/:id/locations", (req, res) => {
   res.status(201).json({ ok: true });
 });
 
+app.get("/jams/:id", (req, res) => {
+  const { id } = req.params;
+  const jam = getJamById(id);
+
+  if (!jam) {
+    return res.status(404).json({ error: "jam not found" });
+  }
+
+  res.json({
+    id: jam.id,
+    createdAt: jam.createdAt,
+    locationCount: jam.locations.length
+  });
+});
+
 function pickArea(address) {
   if (!address) {
     return null;
