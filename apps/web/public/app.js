@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000";
+const API_BASE = "https://halfway-f1ft.onrender.com";
 
 const createJamBtn = document.getElementById("createJamBtn");
 const sendLocationBtn = document.getElementById("sendLocationBtn");
