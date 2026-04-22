@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const { createJam, addLocation, getJamById } = require("./jamStore");
 
@@ -25,12 +26,16 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.post("/jams", (req, res) => {
-  const jam = createJam();
-  res.status(201).json({ id: jam.id });
+app.post("/jams", async (req, res) => {
+  try {
+    const jam = await createJam();
+    res.status(201).json({ id: jam.id });
+  } catch (error) {
+    res.status(500).json({ error: "server error" });
+  }
 });
 
-app.post("/jams/:id/locations", (req, res) => {
+app.post("/jams/:id/locations", async (req, res) => {
   const { id } = req.params;
   const { lat, lng } = req.body;
 
@@ -38,27 +43,35 @@ app.post("/jams/:id/locations", (req, res) => {
     return res.status(400).json({ error: "lat and lng must be numbers" });
   }
 
-  const jam = addLocation(id, { lat, lng });
-  if (!jam) {
-    return res.status(404).json({ error: "jam not found" });
-  }
+  try {
+    const jam = await addLocation(id, { lat, lng });
+    if (!jam) {
+      return res.status(404).json({ error: "jam not found" });
+    }
 
-  res.status(201).json({ ok: true });
+    res.status(201).json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: "server error" });
+  }
 });
 
-app.get("/jams/:id", (req, res) => {
+app.get("/jams/:id", async (req, res) => {
   const { id } = req.params;
-  const jam = getJamById(id);
+  try {
+    const jam = await getJamById(id);
 
-  if (!jam) {
-    return res.status(404).json({ error: "jam not found" });
+    if (!jam) {
+      return res.status(404).json({ error: "jam not found" });
+    }
+
+    res.json({
+      id: jam.id,
+      createdAt: jam.createdAt,
+      locationCount: jam.locations.length
+    });
+  } catch (error) {
+    res.status(500).json({ error: "server error" });
   }
-
-  res.json({
-    id: jam.id,
-    createdAt: jam.createdAt,
-    locationCount: jam.locations.length
-  });
 });
 
 function pickArea(address) {
@@ -81,7 +94,12 @@ function pickArea(address) {
 
 app.get("/jams/:id/result", async (req, res) => {
   const { id } = req.params;
-  const jam = getJamById(id);
+  let jam;
+  try {
+    jam = await getJamById(id);
+  } catch (error) {
+    return res.status(500).json({ error: "server error" });
+  }
 
   if (!jam) {
     return res.status(404).json({ error: "jam not found" });

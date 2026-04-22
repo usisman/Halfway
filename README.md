@@ -22,3 +22,8 @@ Kapatmak için:
 ```bash
 make down
 ```
+
+
+Deploy:
+Backend Render’da: https://halfway-f1ft.onrender.com
+Frontend Vercel’de: https://halfway-vercel.vercel.app

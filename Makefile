@@ -11,7 +11,7 @@ WEB_PID := $(PID_DIR)/web.pid
 API_LOG := $(PID_DIR)/api.log
 WEB_LOG := $(PID_DIR)/web.log
 
-.PHONY: up down status
+.PHONY: up down status db-init
 
 up:
 	@mkdir -p "$(PID_DIR)"
@@ -55,3 +55,6 @@ status:
 	else \
 		echo "Web calismiyor"; \
 	fi
+
+db-init:
+	@cd "$(API_DIR)" && npm run db:init
